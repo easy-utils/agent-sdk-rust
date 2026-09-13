@@ -199,6 +199,7 @@ checksum = "92773504d58c093f6de2459af4af33faa518c13451eb8f2b5698ed3d36e7c813"
 [[package]]
 name = "easy-rpc"
 version = "0.1.0"
+source = "git+https://github.com/easy-utils/easy-rpc-rust.git?tag=v0.2.0#d2a46410e351935e6fd629b3fb7d080170b198cf"
 dependencies = [
  "async-trait",
  "bytes",

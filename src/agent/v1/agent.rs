@@ -123,22 +123,12 @@ pub struct Provider {
     pub base_url: ::prost::alloc::string::String,
     #[prost(string, tag="4")]
     pub api_key: ::prost::alloc::string::String,
-    #[prost(message, repeated, tag="5")]
-    pub headers: ::prost::alloc::vec::Vec<provider::HeadersEntry>,
+    #[prost(map="string, string", tag="5")]
+    pub headers: ::std::collections::HashMap<::prost::alloc::string::String, ::prost::alloc::string::String>,
     #[prost(message, repeated, tag="6")]
     pub models: ::prost::alloc::vec::Vec<ProviderModel>,
     #[prost(string, tag="7")]
     pub updated_at: ::prost::alloc::string::String,
-}
-/// Nested message and enum types in `Provider`.
-pub mod provider {
-    #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
-    pub struct HeadersEntry {
-        #[prost(string, tag="1")]
-        pub key: ::prost::alloc::string::String,
-        #[prost(string, tag="2")]
-        pub value: ::prost::alloc::string::String,
-    }
 }
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct ProviderModel {
@@ -185,37 +175,17 @@ pub struct ToolConfigField {
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ToolConfig {
-    #[prost(message, repeated, tag="1")]
-    pub values: ::prost::alloc::vec::Vec<tool_config::ValuesEntry>,
-}
-/// Nested message and enum types in `ToolConfig`.
-pub mod tool_config {
-    #[derive(Clone, PartialEq, ::prost::Message)]
-    pub struct ValuesEntry {
-        #[prost(string, tag="1")]
-        pub key: ::prost::alloc::string::String,
-        #[prost(message, optional, tag="2")]
-        pub value: ::core::option::Option<::prost_types::Value>,
-    }
+    #[prost(map="string, message", tag="1")]
+    pub values: ::std::collections::HashMap<::prost::alloc::string::String, ::prost_types::Value>,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct PromptResponse {
     #[prost(string, tag="1")]
     pub event: ::prost::alloc::string::String,
-    #[prost(message, repeated, tag="2")]
-    pub params: ::prost::alloc::vec::Vec<prompt_response::ParamsEntry>,
+    #[prost(map="string, string", tag="2")]
+    pub params: ::std::collections::HashMap<::prost::alloc::string::String, ::prost::alloc::string::String>,
     #[prost(string, tag="3")]
     pub eid: ::prost::alloc::string::String,
-}
-/// Nested message and enum types in `PromptResponse`.
-pub mod prompt_response {
-    #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
-    pub struct ParamsEntry {
-        #[prost(string, tag="1")]
-        pub key: ::prost::alloc::string::String,
-        #[prost(string, tag="2")]
-        pub value: ::prost::alloc::string::String,
-    }
 }
 #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct WatchSessionRequest {
@@ -472,18 +442,8 @@ pub struct ListProvidersCatalogRequest {
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ListProvidersCatalogResponse {
-    #[prost(message, repeated, tag="1")]
-    pub providers: ::prost::alloc::vec::Vec<list_providers_catalog_response::ProvidersEntry>,
-}
-/// Nested message and enum types in `ListProvidersCatalogResponse`.
-pub mod list_providers_catalog_response {
-    #[derive(Clone, PartialEq, ::prost::Message)]
-    pub struct ProvidersEntry {
-        #[prost(string, tag="1")]
-        pub key: ::prost::alloc::string::String,
-        #[prost(message, optional, tag="2")]
-        pub value: ::core::option::Option<super::CatalogProvider>,
-    }
+    #[prost(map="string, message", tag="1")]
+    pub providers: ::std::collections::HashMap<::prost::alloc::string::String, CatalogProvider>,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct CatalogProvider {
@@ -497,18 +457,8 @@ pub struct CatalogProvider {
     pub npm: ::prost::alloc::string::String,
     #[prost(string, repeated, tag="5")]
     pub env: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
-    #[prost(message, repeated, tag="6")]
-    pub models: ::prost::alloc::vec::Vec<catalog_provider::ModelsEntry>,
-}
-/// Nested message and enum types in `CatalogProvider`.
-pub mod catalog_provider {
-    #[derive(Clone, PartialEq, ::prost::Message)]
-    pub struct ModelsEntry {
-        #[prost(string, tag="1")]
-        pub key: ::prost::alloc::string::String,
-        #[prost(message, optional, tag="2")]
-        pub value: ::core::option::Option<::prost_types::Value>,
-    }
+    #[prost(map="string, message", tag="6")]
+    pub models: ::std::collections::HashMap<::prost::alloc::string::String, ::prost_types::Value>,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct RegisterProviderRequest {
@@ -530,18 +480,8 @@ pub struct DiscoverGatewayModelsRequest {
     pub base_url: ::prost::alloc::string::String,
     #[prost(string, tag="4")]
     pub api_key: ::prost::alloc::string::String,
-    #[prost(message, repeated, tag="5")]
-    pub headers: ::prost::alloc::vec::Vec<discover_gateway_models_request::HeadersEntry>,
-}
-/// Nested message and enum types in `DiscoverGatewayModelsRequest`.
-pub mod discover_gateway_models_request {
-    #[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
-    pub struct HeadersEntry {
-        #[prost(string, tag="1")]
-        pub key: ::prost::alloc::string::String,
-        #[prost(string, tag="2")]
-        pub value: ::prost::alloc::string::String,
-    }
+    #[prost(map="string, string", tag="5")]
+    pub headers: ::std::collections::HashMap<::prost::alloc::string::String, ::prost::alloc::string::String>,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct DiscoverGatewayModelsResponse {
