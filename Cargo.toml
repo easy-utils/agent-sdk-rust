@@ -1,0 +1,13 @@
+[package]
+name = "agent-sdk-rust"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+easy-rpc = { path = "/home/user/easy-utils/easy-rpc-rust", default-features = false, features = ["h1h2"] }
+tokio = { version = "1", features = ["full"] }
+prost = "0.13.5"
+prost-types = "0.13.5"
+async-trait = "0.1"
+reqwest = { version = "0.13.5", default-features = false, features = ["rustls", "http2"] }
+bytes = "1"
