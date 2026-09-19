@@ -4,10 +4,10 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-easy-rpc = { git = "https://github.com/easy-utils/easy-rpc-rust.git", tag = "v0.4.0", default-features = false, features = ["h1h2"] }
+easy-rpc = { git = "https://github.com/easy-utils/easy-rpc-rust.git", tag = "v3.0.0", default-features = false, features = ["h1h2"] }
 tokio = { version = "1", features = ["full"] }
-prost = "0.13.5"
-prost-types = "0.13.5"
+prost = "0.13"
+prost-types = "0.13"
 async-trait = "0.1"
-reqwest = { version = "0.13.5", default-features = false, features = ["rustls", "http2"] }
+reqwest = { version = "0.13.5", default-features = false, features = ["rustls", "http2", "stream"] }
 bytes = "1"

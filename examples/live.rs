@@ -17,7 +17,7 @@ async fn main() {
     println!("WatchSessions path = {} server_stream={}", spec.path, spec.server_stream);
     let mut h = easy_rpc::protocol::Headers::new();
     h.insert("authorization".to_string(), vec!["Bearer devtoken".to_string()]);
-    let req = Request { url: spec.path.clone(), method: "POST".to_string(), headers: h, body: Some(WatchSessionsRequest{}.encode_to_vec().into()) };
+    let req = Request { url: spec.path.clone(), headers: h, body: Some(WatchSessionsRequest{}.encode_to_vec().into()) };
     let start = std::time::Instant::now();
     let mut st = t.open_stream(req).await.expect("open_stream");
     let first = st.recv().await;

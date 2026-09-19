@@ -40,7 +40,6 @@ impl Client {
     fn req(&self, url: &str, body: Vec<u8>) -> Request {
         Request {
             url: url.to_string(),
-            method: "POST".to_string(),
             headers: self.headers(),
             body: Some(body.into()),
         }
