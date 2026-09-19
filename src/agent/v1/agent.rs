@@ -434,15 +434,16 @@ impl ::prost::Name for WatchSessionsResponse {
         "/agent.v1.WatchSessionsResponse".into()
     }
 }
-/// A file reference (attachment).
+/// A file reference (attachment). `mime` is NOT carried: the agent DERIVES the
+/// content type from the bytes at ingest time (magic-byte sniff + media probe)
+/// and resolves it from the stored record, so a caller can neither mislabel a
+/// file nor need a content-type library of its own.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct FileRef {
     #[prost(string, tag = "1")]
     pub code: ::prost::alloc::string::String,
     #[prost(string, tag = "2")]
     pub name: ::prost::alloc::string::String,
-    #[prost(string, tag = "3")]
-    pub mime: ::prost::alloc::string::String,
     #[prost(int32, tag = "4")]
     pub size: i32,
 }
@@ -1571,12 +1572,16 @@ impl ::prost::Name for UploadFileRequest {
         "/agent.v1.UploadFileRequest".into()
     }
 }
+/// `mime` is the SERVER-DERIVED content type of the stored file (see
+/// IngestFileResponse); the caller never supplies one.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct UploadFileResponse {
     #[prost(bool, tag = "1")]
     pub ok: bool,
     #[prost(string, tag = "2")]
     pub code: ::prost::alloc::string::String,
+    #[prost(string, tag = "3")]
+    pub mime: ::prost::alloc::string::String,
 }
 impl ::prost::Name for UploadFileResponse {
     const NAME: &'static str = "UploadFileResponse";
@@ -1597,8 +1602,6 @@ pub struct IngestFileRequest {
     pub data: ::prost::alloc::vec::Vec<u8>,
     #[prost(string, tag = "3")]
     pub name: ::prost::alloc::string::String,
-    #[prost(string, tag = "4")]
-    pub mime: ::prost::alloc::string::String,
 }
 impl ::prost::Name for IngestFileRequest {
     const NAME: &'static str = "IngestFileRequest";
@@ -1610,12 +1613,17 @@ impl ::prost::Name for IngestFileRequest {
         "/agent.v1.IngestFileRequest".into()
     }
 }
+/// `mime` is the content type the agent DERIVED from the bytes (magic-byte
+/// sniff, with an ffprobe refinement for media). It is authoritative: clients
+/// render from it rather than asserting their own guess.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct IngestFileResponse {
     #[prost(bool, tag = "1")]
     pub ok: bool,
     #[prost(string, tag = "2")]
     pub code: ::prost::alloc::string::String,
+    #[prost(string, tag = "3")]
+    pub mime: ::prost::alloc::string::String,
 }
 impl ::prost::Name for IngestFileResponse {
     const NAME: &'static str = "IngestFileResponse";
@@ -1676,6 +1684,13 @@ impl ::prost::Name for GetFileMetaRequest {
         "/agent.v1.GetFileMetaRequest".into()
     }
 }
+/// File metadata: identity + server-derived media facts. The optional media
+/// fields are populated (asynchronously, best-effort) by the agent's media
+/// probe when the mime is a supported image/video/audio type; they are absent
+/// (field presence unset) for files that are not media or were probed before
+/// the feature existed. `thumb_code` is itself a canonical file code (the
+/// thumbnail is a content-addressed file), so a client fetches it through the
+/// normal GetFile/GetFileStream path.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetFileMetaResponse {
     #[prost(string, tag = "1")]
@@ -1684,6 +1699,16 @@ pub struct GetFileMetaResponse {
     pub mime: ::prost::alloc::string::String,
     #[prost(int32, tag = "3")]
     pub size: i32,
+    #[prost(int32, optional, tag = "4")]
+    pub width: ::core::option::Option<i32>,
+    #[prost(int32, optional, tag = "5")]
+    pub height: ::core::option::Option<i32>,
+    #[prost(int64, optional, tag = "6")]
+    pub duration_ms: ::core::option::Option<i64>,
+    #[prost(string, optional, tag = "7")]
+    pub thumb_code: ::core::option::Option<::prost::alloc::string::String>,
+    #[prost(string, optional, tag = "8")]
+    pub thumbhash: ::core::option::Option<::prost::alloc::string::String>,
 }
 impl ::prost::Name for GetFileMetaResponse {
     const NAME: &'static str = "GetFileMetaResponse";
@@ -1693,6 +1718,33 @@ impl ::prost::Name for GetFileMetaResponse {
     }
     fn type_url() -> ::prost::alloc::string::String {
         "/agent.v1.GetFileMetaResponse".into()
+    }
+}
+/// GetFileStream streams a file's bytes in order (chunk by chunk). It is the
+/// streaming counterpart of GetFile: small files still round-trip fine, while
+/// large media is delivered progressively so a client can start rendering
+/// before the whole object has arrived. Without a `Range` API this is a
+/// forward-only stream (no seek); `offset` is the byte offset of `data` in the
+/// file and `total` its full length, so a client can compute progress.
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct FileChunk {
+    #[prost(bytes = "vec", tag = "1")]
+    pub data: ::prost::alloc::vec::Vec<u8>,
+    #[prost(uint64, tag = "2")]
+    pub offset: u64,
+    #[prost(uint64, tag = "3")]
+    pub total: u64,
+    #[prost(bool, tag = "4")]
+    pub last: bool,
+}
+impl ::prost::Name for FileChunk {
+    const NAME: &'static str = "FileChunk";
+    const PACKAGE: &'static str = "agent.v1";
+    fn full_name() -> ::prost::alloc::string::String {
+        "agent.v1.FileChunk".into()
+    }
+    fn type_url() -> ::prost::alloc::string::String {
+        "/agent.v1.FileChunk".into()
     }
 }
 #[derive(Clone, Copy, PartialEq, ::prost::Message)]
