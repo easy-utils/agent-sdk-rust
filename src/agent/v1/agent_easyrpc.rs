@@ -2,6 +2,7 @@
 pub fn method_specs() -> Vec<easy_rpc::protocol::MethodSpec> {
   vec![
   easy_rpc::protocol::MethodSpec { service: "agent.v1.AgentService".to_string(), name: "Health".to_string(), path: "/agent.v1.AgentService/Health".to_string(), client_stream: false, server_stream: false },
+  easy_rpc::protocol::MethodSpec { service: "agent.v1.AgentService".to_string(), name: "GetIdentity".to_string(), path: "/agent.v1.AgentService/GetIdentity".to_string(), client_stream: false, server_stream: false },
   easy_rpc::protocol::MethodSpec { service: "agent.v1.AgentService".to_string(), name: "ListSessions".to_string(), path: "/agent.v1.AgentService/ListSessions".to_string(), client_stream: false, server_stream: false },
   easy_rpc::protocol::MethodSpec { service: "agent.v1.AgentService".to_string(), name: "CreateSession".to_string(), path: "/agent.v1.AgentService/CreateSession".to_string(), client_stream: false, server_stream: false },
   easy_rpc::protocol::MethodSpec { service: "agent.v1.AgentService".to_string(), name: "GetSession".to_string(), path: "/agent.v1.AgentService/GetSession".to_string(), client_stream: false, server_stream: false },

@@ -204,7 +204,7 @@ pub struct Provider {
     #[prost(string, tag = "7")]
     pub updated_at: ::prost::alloc::string::String,
     /// The single modality this provider serves (text | image | video | speech |
-    /// transcription | embedding | rerank | realtime). New field (no renumber).
+    /// transcription | embedding | rerank | realtime).
     #[prost(string, tag = "8")]
     pub capability: ::prost::alloc::string::String,
 }
@@ -219,8 +219,8 @@ impl ::prost::Name for Provider {
     }
 }
 /// Provider model entry. All of a provider's models share the provider's
-/// `capability`; `model_type` mirrors it (kept for wire compatibility and for
-/// clients that read the model directly).
+/// `capability`; `model_type` mirrors it so a client can read the modality
+/// directly from the model.
 ///
 ///    - text      -> context_limit (> 0) REQUIRED (drives compaction budgets)
 ///    - non-text  -> context_limit MUST be 0 (not a chat model)
@@ -444,7 +444,7 @@ pub struct FileRef {
     pub code: ::prost::alloc::string::String,
     #[prost(string, tag = "2")]
     pub name: ::prost::alloc::string::String,
-    #[prost(int32, tag = "4")]
+    #[prost(int32, tag = "3")]
     pub size: i32,
 }
 impl ::prost::Name for FileRef {
@@ -877,21 +877,11 @@ pub struct UpdateSettingsRequest {
     pub model: ::prost::alloc::string::String,
     #[prost(string, tag = "3")]
     pub preset: ::prost::alloc::string::String,
-    /// Optional: omitted means "inherit (preset / default)"; an explicit value
-    /// must be > 0 (0 is rejected).
-    #[prost(int32, optional, tag = "4")]
-    pub max_turns: ::core::option::Option<i32>,
-    #[prost(string, tag = "5")]
-    pub system_prompt: ::prost::alloc::string::String,
-    #[prost(string, tag = "6")]
+    #[prost(string, tag = "4")]
     pub locale: ::prost::alloc::string::String,
     /// Selected reasoning variant id (empty clears it).
-    #[prost(string, tag = "7")]
+    #[prost(string, tag = "5")]
     pub variant: ::prost::alloc::string::String,
-    /// Generic grouping key (empty clears it). Included for completeness; the
-    /// subsession flow sets it at creation time.
-    #[prost(string, optional, tag = "8")]
-    pub group: ::core::option::Option<::prost::alloc::string::String>,
 }
 impl ::prost::Name for UpdateSettingsRequest {
     const NAME: &'static str = "UpdateSettingsRequest";
@@ -1801,6 +1791,43 @@ impl ::prost::Name for HealthResponse {
     }
     fn type_url() -> ::prost::alloc::string::String {
         "/agent.v1.HealthResponse".into()
+    }
+}
+/// GetIdentity returns the caller's resolved identity (from its bearer token).
+/// The webui uses it to show a human username instead of the (fixed, same-
+/// origin) URL. A tenant token can only ever resolve its own identity; an admin
+/// token resolves role=admin with empty tenant fields.
+#[derive(Clone, Copy, PartialEq, ::prost::Message)]
+pub struct GetIdentityRequest {}
+impl ::prost::Name for GetIdentityRequest {
+    const NAME: &'static str = "GetIdentityRequest";
+    const PACKAGE: &'static str = "agent.v1";
+    fn full_name() -> ::prost::alloc::string::String {
+        "agent.v1.GetIdentityRequest".into()
+    }
+    fn type_url() -> ::prost::alloc::string::String {
+        "/agent.v1.GetIdentityRequest".into()
+    }
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct GetIdentityResponse {
+    #[prost(string, tag = "1")]
+    pub tenant: ::prost::alloc::string::String,
+    /// Human-readable tenant name (defaults to the id when unset).
+    #[prost(string, tag = "2")]
+    pub tenant_name: ::prost::alloc::string::String,
+    /// "tenant" | "admin".
+    #[prost(string, tag = "3")]
+    pub role: ::prost::alloc::string::String,
+}
+impl ::prost::Name for GetIdentityResponse {
+    const NAME: &'static str = "GetIdentityResponse";
+    const PACKAGE: &'static str = "agent.v1";
+    fn full_name() -> ::prost::alloc::string::String {
+        "agent.v1.GetIdentityResponse".into()
+    }
+    fn type_url() -> ::prost::alloc::string::String {
+        "/agent.v1.GetIdentityResponse".into()
     }
 }
 /// Tenant is one isolation domain. `id` is the plaintext isolation key used on
