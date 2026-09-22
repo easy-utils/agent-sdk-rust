@@ -87,6 +87,15 @@ pub struct Message {
     pub created_at: ::prost::alloc::string::String,
     #[prost(message, repeated, tag = "5")]
     pub parts: ::prost::alloc::vec::Vec<Part>,
+    /// ORIGIN of the message, when known. Empty for assistant/system rows the
+    /// agent authored itself. A user message carries the mailbox source it was
+    /// delivered with:
+    ///    `user`               — a human prompt (HTTP Prompt route)
+    ///    `session:{session}`  — another session (subsession-create / mail-send)
+    ///    `system:{name}`      — a system/automation source
+    ///    other                — extension-defined; clients degrade gracefully
+    #[prost(string, tag = "6")]
+    pub source: ::prost::alloc::string::String,
 }
 impl ::prost::Name for Message {
     const NAME: &'static str = "Message";
@@ -129,6 +138,8 @@ pub struct MailboxEntry {
     pub id: ::prost::alloc::string::String,
     #[prost(string, tag = "2")]
     pub session_name: ::prost::alloc::string::String,
+    /// Message type: `trigger` (starts a turn), `interrupt`, or `event`
+    /// (folded into context only). Free-form on the wire.
     #[prost(string, tag = "3")]
     pub msg_type: ::prost::alloc::string::String,
     #[prost(string, tag = "4")]
@@ -143,6 +154,14 @@ pub struct MailboxEntry {
     pub consumed_at: ::prost::alloc::string::String,
     #[prost(int64, tag = "9")]
     pub seq: i64,
+    /// ORIGIN of the message, so a consumer can tell a person's prompt from
+    /// another session's hand-off or a system event. Open string:
+    ///    `user`                 — a human prompt (HTTP Prompt route)
+    ///    `session:{session}`    — another session (subsession-create / mail-send)
+    ///    `system:{name}`        — a system/automation source
+    ///    other                  — extension-defined; consumers degrade gracefully
+    #[prost(string, tag = "10")]
+    pub source: ::prost::alloc::string::String,
 }
 impl ::prost::Name for MailboxEntry {
     const NAME: &'static str = "MailboxEntry";
@@ -837,10 +856,20 @@ impl ::prost::Name for StateResponse {
         "/agent.v1.StateResponse".into()
     }
 }
+/// Mailbox listing is NEWEST-FIRST and paged BACKWARD (older) for infinite
+/// scroll: the client holds the newest page and passes the oldest entry it has
+/// as `before` to fetch the next-older page.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MailboxRequest {
     #[prost(string, tag = "1")]
     pub id: ::prost::alloc::string::String,
+    /// Max entries to return (0 => server default).
+    #[prost(int32, tag = "2")]
+    pub limit: i32,
+    /// Backward cursor (exclusive): return entries OLDER than this entry id.
+    /// Empty => the newest page.
+    #[prost(string, tag = "3")]
+    pub before: ::prost::alloc::string::String,
 }
 impl ::prost::Name for MailboxRequest {
     const NAME: &'static str = "MailboxRequest";
@@ -858,6 +887,9 @@ pub struct MailboxResponse {
     pub ok: bool,
     #[prost(message, repeated, tag = "2")]
     pub mailbox: ::prost::alloc::vec::Vec<MailboxEntry>,
+    /// True when more (older) entries exist beyond this page.
+    #[prost(bool, tag = "3")]
+    pub has_more: bool,
 }
 impl ::prost::Name for MailboxResponse {
     const NAME: &'static str = "MailboxResponse";
